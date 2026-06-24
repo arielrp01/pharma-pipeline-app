@@ -213,24 +213,26 @@ STATUS_COLORS = {
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_trials(query: str, max_results: int = 1000) -> pd.DataFrame:
     """Pull clinical trials from ClinicalTrials.gov API v2."""
-    fields = (
-        "NCTId,BriefTitle,Phase,OverallStatus,StartDate,PrimaryCompletionDate,"
-        "CompletionDate,LeadSponsorName,LeadSponsorClass,Condition,InterventionType,"
-        "InterventionName,EnrollmentCount,StudyType,HasResults"
-    )
+    fields = [
+        "NCTId", "BriefTitle", "Phase", "OverallStatus", "StartDate",
+        "PrimaryCompletionDate", "CompletionDate", "LeadSponsorName",
+        "LeadSponsorClass", "Condition", "InterventionType",
+        "InterventionName", "EnrollmentCount", "StudyType", "HasResults"
+    ]
     records, token = [], None
     page_size = min(100, max_results)
 
     while len(records) < max_results:
-        params = {
-            "query.term":   query,
-            "filter.studyType": "INTERVENTIONAL",
-            "pageSize":     page_size,
-            "fields":       fields,
-            "format":       "json",
-        }
+        params = [
+            ("query.term",       query),
+            ("filter.studyType", "INTERVENTIONAL"),
+            ("pageSize",         page_size),
+            ("format",           "json"),
+        ]
+        for f in fields:
+            params.append(("fields", f))
         if token:
-            params["pageToken"] = token
+            params.append(("pageToken", token))
 
         try:
             r = requests.get(CT_BASE, params=params, timeout=15)
@@ -302,12 +304,12 @@ def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 99) -> pd.DataFrame
     """Pull recent drug approvals from openFDA Drugs@FDA endpoint."""
     try:
         params = {
-            "search":  f'submissions.submissionType:NDA+submissions.submissionStatusDate:[2010-01-01+TO+2025-12-31]',
+            "search":  "submissions.submissionType:NDA AND submissions.submissionStatusDate:[2010-01-01 TO 2025-12-31]",
             "limit":   limit,
             "sort":    "submissions.submissionStatusDate:desc",
         }
         if sponsor_hint:
-            params["search"] += f"+AND+sponsorName:{sponsor_hint}"
+            params["search"] += f" AND sponsorName:{sponsor_hint}"
 
         r = requests.get(FDA_BASE, params=params, timeout=15)
         r.raise_for_status()

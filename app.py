@@ -394,7 +394,7 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    load_btn = st.button("▶ Run Analysis", use_container_width=True)
+    load_btn = st.button("Run Analysis", use_container_width=True)
     st.markdown(
         "<div style='font-size:0.65rem; color:#94a3b8; margin-top:1rem;'>"
         "Data: ClinicalTrials.gov API v2 + openFDA Drugs@FDA · Updates daily</div>",

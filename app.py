@@ -322,9 +322,16 @@ def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 1000) -> pd.DataFra
     for result in data.get("results", []):
         sponsor = result.get("sponsor_name", "")
         app_no  = result.get("application_number", "")
+
+        # Filter to NDA/BLA applications only (skip ANDAs/generics)
+        if not (app_no.startswith("NDA") or app_no.startswith("BLA")):
+            continue
+        app_type = "NDA" if app_no.startswith("NDA") else "BLA"
+
         for prod in result.get("products", []):
             for sub in result.get("submissions", []):
-                if sub.get("submission_type") in ("NDA", "BLA") and sub.get("submission_status") == "AP":
+                # Only original approvals — not supplements or tentative approvals
+                if sub.get("submission_type") == "ORIG" and sub.get("submission_status") == "AP":
                     rows.append({
                         "application_number": app_no,
                         "sponsor":    sponsor,
@@ -332,8 +339,10 @@ def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 1000) -> pd.DataFra
                         "generic_name": prod.get("active_ingredients", [{}])[0].get("name", "") if prod.get("active_ingredients") else "",
                         "dosage_form": prod.get("dosage_form", ""),
                         "route":       prod.get("route", ""),
-                        "approval_date": pd.to_datetime(sub.get("submission_status_date"), errors="coerce"),
-                        "submission_type": sub.get("submission_type"),
+                        "approval_date": pd.to_datetime(
+                            sub.get("submission_status_date"), format="%Y%m%d", errors="coerce"
+                        ),
+                        "submission_type": app_type,
                     })
 
     df = pd.DataFrame(rows).drop_duplicates(subset=["application_number", "brand_name"])

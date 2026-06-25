@@ -144,14 +144,14 @@ st.markdown("""
     color: #64748b !important;
   }
   section[data-testid="stSidebar"] .stButton > button {
-    background: #0d9488 !important;
+    background: #14b8a6 !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 6px !important;
     font-weight: 600 !important;
   }
   section[data-testid="stSidebar"] .stButton > button:hover {
-    background: #0f766e !important;
+    background: #0d9488 !important;
   }
 
   /* ── Plotly chart background ─────────────── */

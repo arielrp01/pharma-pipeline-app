@@ -355,7 +355,6 @@ def compute_pipeline_duration(df: pd.DataFrame) -> pd.DataFrame:
 # SIDEBAR
 # ─────────────────────────────────────────────
 with st.sidebar:
-
     area = st.selectbox(
         "Therapeutic Area",
         list(THERAPEUTIC_AREAS.keys()),
@@ -397,6 +396,9 @@ with st.sidebar:
 
     st.markdown("---")
     load_btn = st.button("Run Analysis", use_container_width=True)
+    if st.button("Clear Cache", use_container_width=True, type="secondary"):
+        st.cache_data.clear()
+        st.rerun()
     st.markdown(
         "<div style='font-size:0.65rem; color:#94a3b8; margin-top:1rem;'>"
         "Data: ClinicalTrials.gov API v2 + openFDA Drugs@FDA · Updates daily</div>",
@@ -630,7 +632,7 @@ if not df_dur.empty:
         points="outliers",
         labels={"duration_months": "Duration (months)", "phase_label": "Phase"},
         height=260,
-        category_orders={"phase_label": ["Phase 2", "Ph.2/3", "Phase 3"]},
+        category_orders={"phase_label": ["Phase 2", "Phase 2/3", "Phase 3"]},
     )
     fig_dur.update_layout(
         margin=dict(l=0, r=0, t=10, b=10),
@@ -746,7 +748,7 @@ df_display["Est. Completion"] = df_display["Est. Completion"].dt.strftime("%Y-%m
 df_display["Enrollment"] = df_display["Enrollment"].fillna(0).astype(int).replace(0, "—")
 df_display["Results?"] = df_display["Results?"].map({True: "✓", False: "—"})
 df_display["NCT ID"] = df_display["NCT ID"].apply(
-    lambda x: f"[{x}](https://clinicaltrials.gov/study/{x})" if pd.notna(x) else "—"
+    lambda x: f"https://clinicaltrials.gov/study/{x}" if pd.notna(x) else None
 )
 
 st.dataframe(
@@ -755,7 +757,10 @@ st.dataframe(
     hide_index=True,
     height=340,
     column_config={
-        "NCT ID": st.column_config.LinkColumn("NCT ID"),
+        "NCT ID": st.column_config.LinkColumn(
+            "NCT ID",
+            display_text="https://clinicaltrials.gov/study/(NCT[0-9]+)",
+        ),
         "Title":  st.column_config.TextColumn("Title", width="large"),
     }
 )

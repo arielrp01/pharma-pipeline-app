@@ -587,24 +587,23 @@ with col3:
 
     if yearly.empty:
         st.info("No trial start dates available for the current filter selection.")
-        yearly = pd.DataFrame({"year_started": [], "phase_label": [], "count": []})
-
-    fig_time = px.area(
-        yearly, x="year_started", y="count", color="phase_label",
-        color_discrete_sequence=["#ccfbf1", "#5eead4", "#14b8a6", "#0d9488", "#0f766e", "#134e4a", "#1a2e2c"],
-        labels={"year_started": "Year", "count": "New Trials", "phase_label": "Phase"},
-        height=280,
-    )
-    fig_time.update_layout(
-        margin=dict(l=0, r=0, t=10, b=10),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        legend=dict(orientation="h", y=-0.2, font=dict(size=9)),
-        xaxis=dict(gridcolor="#e5e7eb", tickformat="d", dtick=1, type="linear"),
-        yaxis=dict(gridcolor="#e5e7eb"),
-        font=dict(family="Inter", size=11),
-    )
-    st.plotly_chart(fig_time, use_container_width=True)
+    else:
+        fig_time = px.area(
+            yearly, x="year_started", y="count", color="phase_label",
+            color_discrete_sequence=["#ccfbf1", "#5eead4", "#14b8a6", "#0d9488", "#0f766e", "#134e4a", "#1a2e2c"],
+            labels={"year_started": "Year", "count": "New Trials", "phase_label": "Phase"},
+            height=280,
+        )
+        fig_time.update_layout(
+            margin=dict(l=0, r=0, t=10, b=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            legend=dict(orientation="h", y=-0.2, font=dict(size=9)),
+            xaxis=dict(gridcolor="#e5e7eb", tickformat="d", dtick=1, type="linear"),
+            yaxis=dict(gridcolor="#e5e7eb"),
+            font=dict(family="Inter", size=11),
+        )
+        st.plotly_chart(fig_time, use_container_width=True)
 
 with col4:
     top_sponsors = df["sponsor"].value_counts().head(12).reset_index()

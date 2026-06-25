@@ -770,7 +770,10 @@ if df_fda is not None and not df_fda.empty:
 # ─────────────────────────────────────────────
 st.markdown("<div class='section-label'>Trial Explorer</div>", unsafe_allow_html=True)
 
-search_term = st.text_input("Search by sponsor, intervention, or condition", placeholder="e.g. Pfizer, pembrolizumab, non-small cell lung…")
+search_term = st.text_input(
+    "Search by sponsor, intervention, or condition",
+    placeholder="e.g. Pfizer, lecanemab (generic names work best), breast cancer…",
+)
 
 df_table = df.copy()
 if search_term:
@@ -781,41 +784,48 @@ if search_term:
     )
     df_table = df_table[mask]
 
-display_cols = {
-    "nct_id":              "NCT ID",
-    "title":               "Title",
-    "phase_label":         "Phase",
-    "status":              "Status",
-    "sponsor":             "Sponsor",
-    "enrollment":          "Enrollment",
-    "start_date":          "Start",
-    "completion_date":     "Est. Completion",
-    "has_results":         "Results?",
-}
-
-df_display = df_table[list(display_cols.keys())].rename(columns=display_cols).copy()
-df_display["Start"] = df_display["Start"].dt.strftime("%Y-%m").fillna("—")
-df_display["Est. Completion"] = df_display["Est. Completion"].dt.strftime("%Y-%m").fillna("—")
-df_display["Enrollment"] = df_display["Enrollment"].fillna(0).astype(int).replace(0, "—")
-df_display["Results?"] = df_display["Results?"].map({True: "✓", False: "—"})
-df_display["NCT ID"] = df_display["NCT ID"].apply(
-    lambda x: f"https://clinicaltrials.gov/study/{x}" if pd.notna(x) else None
-)
-
-st.dataframe(
-    df_display.head(200),
-    use_container_width=True,
-    hide_index=True,
-    height=340,
-    column_config={
-        "NCT ID": st.column_config.LinkColumn(
-            "NCT ID",
-            display_text="https://clinicaltrials.gov/study/(NCT[0-9]+)",
-        ),
-        "Title":  st.column_config.TextColumn("Title", width="large"),
+if search_term and df_table.empty:
+    st.info(
+        f'No trials match "{search_term}". '
+        "Try a sponsor name, generic drug name, or condition. "
+        "Brand name drugs are often not indexed."
+    )
+else:
+    display_cols = {
+        "nct_id":              "NCT ID",
+        "title":               "Title",
+        "phase_label":         "Phase",
+        "status":              "Status",
+        "sponsor":             "Sponsor",
+        "enrollment":          "Enrollment",
+        "start_date":          "Start",
+        "completion_date":     "Est. Completion",
+        "has_results":         "Results?",
     }
-)
-st.caption(f"Showing {min(200, len(df_table)):,} of {len(df_table):,} filtered trials · Click NCT ID to open on ClinicalTrials.gov")
+
+    df_display = df_table[list(display_cols.keys())].rename(columns=display_cols).copy()
+    df_display["Start"] = df_display["Start"].dt.strftime("%Y-%m").fillna("—")
+    df_display["Est. Completion"] = df_display["Est. Completion"].dt.strftime("%Y-%m").fillna("—")
+    df_display["Enrollment"] = df_display["Enrollment"].fillna(0).astype(int).replace(0, "—")
+    df_display["Results?"] = df_display["Results?"].map({True: "✓", False: "—"})
+    df_display["NCT ID"] = df_display["NCT ID"].apply(
+        lambda x: f"https://clinicaltrials.gov/study/{x}" if pd.notna(x) else None
+    )
+
+    st.dataframe(
+        df_display.head(200),
+        use_container_width=True,
+        hide_index=True,
+        height=340,
+        column_config={
+            "NCT ID": st.column_config.LinkColumn(
+                "NCT ID",
+                display_text="https://clinicaltrials.gov/study/(NCT[0-9]+)",
+            ),
+            "Title":  st.column_config.TextColumn("Title", width="large"),
+        }
+    )
+    st.caption(f"Showing {min(200, len(df_table)):,} of {len(df_table):,} filtered trials · Click NCT ID to open on ClinicalTrials.gov")
 
 
 # ─────────────────────────────────────────────

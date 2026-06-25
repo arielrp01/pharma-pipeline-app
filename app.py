@@ -772,7 +772,7 @@ st.markdown("<div class='section-label'>Trial Explorer</div>", unsafe_allow_html
 
 search_term = st.text_input(
     "Search by sponsor, intervention, or condition",
-    placeholder="e.g. Pfizer, lecanemab (generic names work best), breast cancer…",
+    placeholder="e.g. Pfizer, pembrolizumab, non-small cell lung, etc.",
 )
 
 df_table = df.copy()

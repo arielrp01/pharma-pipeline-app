@@ -616,15 +616,16 @@ with col4:
     top_sponsors.columns = ["Sponsor", "Trials"]
     top_sponsors["Short"] = top_sponsors["Sponsor"].str.slice(0, 28)
 
+    top_sponsors_sorted = top_sponsors.sort_values("Trials")
     fig_sponsors = px.bar(
-        top_sponsors.sort_values("Trials"), x="Trials", y="Short",
+        top_sponsors_sorted, x="Trials", y="Short",
         orientation="h",
         color="Trials",
         color_continuous_scale=["#99f6e4", "#0d9488"],
         height=280,
+        custom_data=["Sponsor"],
     )
     fig_sponsors.update_traces(
-        customdata=top_sponsors[["Sponsor"]].values,
         hovertemplate="<b>%{customdata[0]}</b><br>%{x} trials<extra></extra>"
     )
     fig_sponsors.update_layout(
@@ -721,15 +722,16 @@ if df_fda is not None and not df_fda.empty:
         top_fda_sponsors = df_fda["sponsor"].value_counts().head(10).reset_index()
         top_fda_sponsors.columns = ["Sponsor", "Approvals"]
         top_fda_sponsors["Short"] = top_fda_sponsors["Sponsor"].str.slice(0, 25)
+        top_fda_sorted = top_fda_sponsors.sort_values("Approvals")
         fig_fda_s = px.bar(
-            top_fda_sponsors.sort_values("Approvals"), x="Approvals", y="Short",
+            top_fda_sorted, x="Approvals", y="Short",
             orientation="h",
             color="Approvals",
             color_continuous_scale=["#99f6e4", "#0d9488"],
             height=220,
+            custom_data=["Sponsor"],
         )
         fig_fda_s.update_traces(
-            customdata=top_fda_sponsors[["Sponsor"]].values,
             hovertemplate="<b>%{customdata[0]}</b><br>%{x} approvals<extra></extra>"
         )
         fig_fda_s.update_layout(

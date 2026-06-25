@@ -556,7 +556,12 @@ with col2:
         hole=0.55,
         height=280,
     )
-    fig_status.update_traces(textposition="inside", textinfo="percent", showlegend=True)
+    fig_status.update_traces(
+        textposition="inside",
+        textinfo="percent",
+        showlegend=True,
+        hovertemplate="<b>%{label}</b><br>%{value} trials (%{percent})<extra></extra>",
+    )
     fig_status.update_layout(
         margin=dict(l=0, r=0, t=10, b=30),
         paper_bgcolor="rgba(0,0,0,0)",

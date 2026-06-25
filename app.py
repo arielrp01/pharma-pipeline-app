@@ -423,7 +423,7 @@ with st.sidebar:
 st.markdown("""
 <div class='app-header'>
   <h1>Pharma Drug Development Pipeline</h1>
-  <p>Trial activity to FDA approval · ClinicalTrials.gov &amp; openFDA Drugs · Live Data</p>
+  <p>Trial activity to FDA approval · ClinicalTrials.gov &amp; openFDA · Live Data</p>
 </div>
 """, unsafe_allow_html=True)
 

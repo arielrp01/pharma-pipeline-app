@@ -625,11 +625,11 @@ with col4:
     fig_sponsors = px.bar(
         top_sponsors_sorted, x="Trials", y="Short",
         orientation="h",
+        color="Trials",
+        color_continuous_scale=["#99f6e4", "#0d9488"],
         height=280,
         custom_data=["Sponsor"],
     )
-    fig_sponsors.update_traces(marker_color="#14b8a6")
-    
     fig_sponsors.update_traces(
         hovertemplate="<b>%{customdata[0]}</b><br>%{x} trials<extra></extra>"
     )
@@ -677,16 +677,31 @@ if not df_dur.empty:
     with col5:
         st.plotly_chart(fig_dur, use_container_width=True)
     with col6:
+        import math
         med_ph2 = df_dur[df_dur["phase"] == "PHASE2"]["duration_months"].median()
         med_ph3 = df_dur[df_dur["phase"] == "PHASE3"]["duration_months"].median()
+
+        ph2_str = f"{med_ph2:.0f} months" if not math.isnan(med_ph2) else "—"
+        ph3_str = f"{med_ph3:.0f} months" if not math.isnan(med_ph3) else "—"
+
+        if not math.isnan(med_ph2) and not math.isnan(med_ph3) and med_ph2 > 0:
+            ratio_line = (
+                f"Phase 3 trials in {st.session_state.area} run roughly "
+                f"<strong>{med_ph3/med_ph2:.1f}×</strong> as long as Phase 2. "
+                f"This shapes how sponsors model development timelines and resource allocation."
+            )
+        else:
+            ratio_line = (
+                "Not enough completed trials with full date records in this area "
+                "to compute a Phase 2 vs Phase 3 duration ratio."
+            )
+
         st.markdown(f"""
         <div class='insight-box'>
           <strong>Duration benchmarks</strong><br>
-          Median Phase 2: <strong>{med_ph2:.0f} months</strong><br>
-          Median Phase 3: <strong>{med_ph3:.0f} months</strong><br><br>
-          Phase 3 trials in {st.session_state.area} run roughly
-          <strong>{med_ph3/med_ph2:.1f}×</strong> as long as Phase 2.
-          This shapes how sponsors model development timelines and resource allocation.
+          Median Phase 2: <strong>{ph2_str}</strong><br>
+          Median Phase 3: <strong>{ph3_str}</strong><br><br>
+          {ratio_line}
         </div>
         """, unsafe_allow_html=True)
 

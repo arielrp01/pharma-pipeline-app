@@ -581,12 +581,12 @@ with col2:
     fig_status.update_layout(
         margin=dict(l=0, r=0, t=10, b=30),
         paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter", size=11, color="#1a2332"),
+        font=dict(family="Inter", size=10),
         legend=dict(
             orientation="v",
             x=1.02,
             y=0.5,
-            font=dict(size=12, color="#1a2332"),
+            font=dict(size=10),
     ),
 )
     st.plotly_chart(fig_status, use_container_width=True)

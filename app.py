@@ -297,7 +297,7 @@ def fetch_trials(query: str, max_results: int = 1000) -> pd.DataFrame:
         df[col] = pd.to_datetime(df[col], errors="coerce")
 
     df["enrollment"] = pd.to_numeric(df["enrollment"], errors="coerce")
-    df["year_started"] = df["start_date"].dt.year
+    df["year_started"] = df["start_date"].dt.year.astype("Int64")  # nullable int, handles NaT
     df["phase_label"] = df["phase"].map(PHASE_LABELS).fillna(df["phase"].fillna("Unknown"))
 
     return df
@@ -588,7 +588,7 @@ with col3:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         legend=dict(orientation="h", y=-0.2, font=dict(size=9)),
-        xaxis=dict(gridcolor="#e5e7eb"),
+        xaxis=dict(gridcolor="#e5e7eb", tickformat="d"),
         yaxis=dict(gridcolor="#e5e7eb"),
         font=dict(family="Inter", size=11),
     )

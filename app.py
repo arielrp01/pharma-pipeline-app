@@ -320,7 +320,7 @@ def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 1000) -> pd.DataFra
 
     rows = []
     for result in data.get("results", []):
-        sponsor = result.get("sponsor_name", "")
+        sponsor = result.get("sponsor_name", "").title()
         app_no  = result.get("application_number", "")
 
         # Filter to NDA/BLA applications only (skip ANDAs/generics)
@@ -734,11 +734,15 @@ if df_fda is not None and not df_fda.empty:
             hovertemplate="<b>%{x}</b><br>%{y} approvals<extra></extra>"
         )
         fig_appr.update_layout(
-            margin=dict(l=0, r=0, t=10, b=10),
+            margin=dict(l=0, r=0, t=40, b=10),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             coloraxis_showscale=False,
-            xaxis=dict(gridcolor="#e5e7eb"),
+            xaxis=dict(
+                gridcolor="#e5e7eb",
+                rangeslider=dict(visible=True, thickness=0.06),
+                type="linear",
+            ),
             yaxis=dict(gridcolor="#e5e7eb"),
             font=dict(family="Inter", size=11),
             title=dict(text="NDA/BLA Approvals per Year", font=dict(size=11), x=0),
@@ -762,7 +766,7 @@ if df_fda is not None and not df_fda.empty:
             hovertemplate="<b>%{customdata[0]}</b><br>%{x} approvals<extra></extra>"
         )
         fig_fda_s.update_layout(
-            margin=dict(l=0, r=20, t=10, b=10),
+            margin=dict(l=0, r=20, t=40, b=10),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             coloraxis_showscale=False,

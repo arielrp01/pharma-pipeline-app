@@ -197,13 +197,22 @@ PHASE_LABELS = {"EARLY_PHASE1": "Early Phase 1", "PHASE1": "Phase 1", "PHASE1_PH
                 "PHASE2": "Phase 2", "PHASE2_PHASE3": "Phase 2/3", "PHASE3": "Phase 3", "PHASE4": "Phase 4"}
 
 STATUS_COLORS = {
-    "RECRUITING":               "#16a34a",
-    "ACTIVE_NOT_RECRUITING":    "#d97706",
-    "COMPLETED":                "#0d9488",
-    "TERMINATED":               "#dc2626",
-    "WITHDRAWN":                "#9ca3af",
-    "SUSPENDED":                "#7c3aed",
-    "NOT_YET_RECRUITING":       "#0891b2",
+    # Positive / completed states — teal family
+    "COMPLETED":                "#0d9488",  # teal
+    "ACTIVE_NOT_RECRUITING":    "#65a30d",  # soft green (still running, post-enrollment)
+
+    # In-progress / enrolling states — warm family
+    "RECRUITING":               "#ea7c30",  # desaturated orange (actively enrolling)
+    "NOT_YET_RECRUITING":       "#f59e0b",  # amber
+    "ENROLLING_BY_INVITATION":  "#fbbf24",  # light amber
+
+    # Stopped states — red family
+    "TERMINATED":               "#b91c1c",  # muted red
+    "WITHDRAWN":                "#c2410c",  # orange-red
+    "SUSPENDED":                "#7c3aed",  # purple (rare, distinct safety signal)
+
+    # Neutral
+    "UNKNOWN":                  "#94a3b8",  # slate gray
 }
 
 
@@ -711,6 +720,12 @@ if not df_dur.empty:
           {ratio_line}
         </div>
         """, unsafe_allow_html=True)
+else:
+    st.info(
+        "No completed Phase 2 or Phase 3 trials with full start and completion dates "
+        "in the current filter selection. Try widening the year range or selecting "
+        "a broader therapeutic area to see duration benchmarks."
+    )
 
 
 # ─────────────────────────────────────────────

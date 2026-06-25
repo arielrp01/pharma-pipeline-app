@@ -304,7 +304,7 @@ def fetch_trials(query: str, max_results: int = 1000) -> pd.DataFrame:
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
-def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 99) -> pd.DataFrame:
+def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 1000) -> pd.DataFrame:
     """Pull recent drug approvals from openFDA Drugs@FDA endpoint."""
     try:
         params = {
@@ -320,20 +320,20 @@ def fetch_fda_approvals(sponsor_hint: str = "", limit: int = 99) -> pd.DataFrame
 
     rows = []
     for result in data.get("results", []):
-        sponsor = result.get("sponsorName", "")
-        app_no  = result.get("applicationNumber", "")
+        sponsor = result.get("sponsor_name", "")
+        app_no  = result.get("application_number", "")
         for prod in result.get("products", []):
             for sub in result.get("submissions", []):
-                if sub.get("submissionType") in ("NDA", "BLA") and sub.get("submissionStatus") == "AP":
+                if sub.get("submission_type") in ("NDA", "BLA") and sub.get("submission_status") == "AP":
                     rows.append({
                         "application_number": app_no,
                         "sponsor":    sponsor,
-                        "brand_name": prod.get("brandName", ""),
-                        "generic_name": prod.get("activeIngredients", [{}])[0].get("name", "") if prod.get("activeIngredients") else "",
-                        "dosage_form": prod.get("dosageForm", ""),
+                        "brand_name": prod.get("brand_name", ""),
+                        "generic_name": prod.get("active_ingredients", [{}])[0].get("name", "") if prod.get("active_ingredients") else "",
+                        "dosage_form": prod.get("dosage_form", ""),
                         "route":       prod.get("route", ""),
-                        "approval_date": pd.to_datetime(sub.get("submissionStatusDate"), errors="coerce"),
-                        "submission_type": sub.get("submissionType"),
+                        "approval_date": pd.to_datetime(sub.get("submission_status_date"), errors="coerce"),
+                        "submission_type": sub.get("submission_type"),
                     })
 
     df = pd.DataFrame(rows).drop_duplicates(subset=["application_number", "brand_name"])
@@ -435,7 +435,7 @@ if load_btn or st.session_state.df_trials is None:
         df_raw = fetch_trials(query, max_results=max_results)
 
     with st.spinner("Fetching FDA approval records…"):
-        df_fda = fetch_fda_approvals(limit=99)
+        df_fda = fetch_fda_approvals(limit=1000)
 
     st.session_state.df_trials = df_raw
     st.session_state.df_fda    = df_fda

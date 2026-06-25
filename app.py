@@ -586,7 +586,7 @@ with col2:
             orientation="v",
             x=1.02,
             y=0.5,
-            font=dict(size=9),
+            font=dict(size=12),
         ),
     )
     st.plotly_chart(fig_status, use_container_width=True)

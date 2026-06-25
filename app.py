@@ -2,7 +2,7 @@
 Pharma Drug Development Pipeline
 ----------------------------
 Traces the drug development pipeline from clinical trial to FDA approval.
-Data sources: ClinicalTrials.gov API v2 + openFDA Drugs API 
+Data sources: ClinicalTrials.gov API v2 + openFDA Drugs@FDA API
 """
 
 import streamlit as st
@@ -417,6 +417,7 @@ with st.sidebar:
         st.cache_data.clear()
         st.rerun()
 
+
 # ─────────────────────────────────────────────
 # HEADER
 # ─────────────────────────────────────────────
@@ -580,8 +581,8 @@ with col2:
             x=1.02,
             y=0.5,
             font=dict(size=11),
-    ),
-)
+        ),
+    )
     st.plotly_chart(fig_status, use_container_width=True)
 
 
@@ -620,10 +621,21 @@ with col3:
             plot_bgcolor="rgba(0,0,0,0)",
             legend=dict(orientation="h", y=-0.2, font=dict(size=9)),
             xaxis=dict(gridcolor="#e5e7eb", tickformat="d", dtick=1, type="linear"),
-            yaxis=dict(gridcolor="#e5e7eb"),
+            yaxis=dict(gridcolor="#e5e7eb", tickformat="d", dtick=1, rangemode="tozero"),
             font=dict(family="Inter", size=11),
         )
         st.plotly_chart(fig_time, use_container_width=True)
+
+        # Data quality caption — only surface when there's a meaningful gap
+        n_with_dates = int(yearly["count"].sum())
+        n_total = len(df)
+        if n_with_dates < 0.7 * n_total:
+            st.caption(
+                f"Showing {n_with_dates} of {n_total} filtered trials with parseable start dates. "
+                "Date completeness in ClinicalTrials.gov varies by therapeutic area. "
+                "Oncology and Rare Disease tend to be most complete. "
+                "Cardiovascular and Metabolic less so."
+            )
 
 with col4:
     top_sponsors = df["sponsor"].value_counts().head(12).reset_index()
@@ -647,7 +659,7 @@ with col4:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         coloraxis_showscale=False,
-        xaxis=dict(gridcolor="#e5e7eb"),
+        xaxis=dict(gridcolor="#e5e7eb", tickformat="d", dtick=1),
         yaxis=dict(gridcolor="rgba(0,0,0,0)", title=None),
         font=dict(family="Inter", size=10),
     )

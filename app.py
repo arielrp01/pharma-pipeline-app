@@ -577,11 +577,17 @@ col3, col4 = st.columns(2)
 with col3:
     yearly = (
         df.dropna(subset=["year_started"])
+          .assign(year_started=lambda d: d["year_started"].astype(int))
           .groupby(["year_started", "phase_label"])
           .size()
           .reset_index(name="count")
     )
-    yearly["year_started"] = yearly["year_started"].astype(int)
+    # Convert to plain Python int (Plotly doesn't handle pandas Int64 cleanly)
+    yearly["year_started"] = yearly["year_started"].astype("int64")
+
+    if yearly.empty:
+        st.info("No trial start dates available for the current filter selection.")
+        yearly = pd.DataFrame({"year_started": [], "phase_label": [], "count": []})
 
     fig_time = px.area(
         yearly, x="year_started", y="count", color="phase_label",
@@ -594,7 +600,7 @@ with col3:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         legend=dict(orientation="h", y=-0.2, font=dict(size=9)),
-        xaxis=dict(gridcolor="#e5e7eb", tickformat="d"),
+        xaxis=dict(gridcolor="#e5e7eb", tickformat="d", dtick=1, type="linear"),
         yaxis=dict(gridcolor="#e5e7eb"),
         font=dict(family="Inter", size=11),
     )

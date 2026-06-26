@@ -91,7 +91,7 @@ def render_brief_section(df_filtered, filters: dict):
         """
         <p style="color:#64748b; font-size:0.82rem; line-height:1.55;
                   margin-top:-0.5rem; margin-bottom:1rem; max-width:680px;">
-            A competitive intelligence brief synthesized from the filtered dataset above, powered by Claude · Estimated delivery: 5–10 secs.
+            A competitive intelligence brief synthesized from the filtered dataset, powered by Claude · Synthesis ETA: 5–10 seconds
         </p>
         """,
         unsafe_allow_html=True,

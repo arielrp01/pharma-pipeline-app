@@ -13,6 +13,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from datetime import datetime, date
 import time
+from generate_brief import generate_analyst_brief
+from brief_ui import render_brief_section
 
 # ─────────────────────────────────────────────
 # PAGE CONFIG
@@ -855,6 +857,16 @@ else:
     )
     st.caption(f"Showing {min(200, len(df_table)):,} of {len(df_table):,} filtered trials · Click NCT ID to open on ClinicalTrials.gov")
 
+# ─────────────────────────────────────────────
+# AI ANALYST BRIEF
+# ─────────────────────────────────────────────
+active_filters = {
+    "therapeutic_area": area,
+    "phases": sel_phases,
+    "year_range": (year_min, year_max),
+    "sponsor_type": sponsor_types,
+}
+render_brief_section(df, active_filters)
 
 # ─────────────────────────────────────────────
 # FOOTER
